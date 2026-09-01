@@ -1,3 +1,567 @@
+/* ============================================================
+   PAINEL DO CONSELHO DE CLASSE PARTICIPATIVO — 2ª ETAPA
+   ============================================================
+   Arquivo único: dados reais das respostas + renderização dos
+   gráficos + animações de entrada. Não faz nenhuma chamada de
+   rede — os dados abaixo são um retrato fixo das respostas
+   coletadas no Microsoft Forms.
+
+   Pra atualizar os números no futuro, basta substituir o array
+   RESPONSES abaixo por uma nova exportação do Forms.
+   ============================================================ */
+
+const RESPONSES = [
+  {
+    q1: `IA`,
+    q2: `Está presente em tudo.`,
+    q3: `No trabalho`,
+    q4: `O papel é aumentar a existência humana`,
+    q5: `Ativo`,
+    q6: `Raramente`,
+    q7: `Uso para escola, principalmente pesquisar, ler livros on-line e etc.`,
+    q8: `Pesquisas`,
+    q9: `Para gerenciar notas, pesquisas e falar com os pais.`,
+    q10: `A tecnologia ajuda a comunicar as pessoas, com a cultura elas divulgam para mostras suas artes e seus significado`,
+    q11: `Sim`,
+    q12: `Jogos`,
+    q13: `Verifico quem publicou`,
+    q14: `Raramente`,
+    q15: `Usar a tecnologia com equilíbrio`,
+    q16: `Bom`,
+    q17: `Internet`,
+    q18: `N sei`,
+    q19: `Nada`,
+  },
+  {
+    q1: `Praticidade`,
+    q2: `Está sempre presente no dia a dia`,
+    q3: `Em casa`,
+    q4: `Facilitar atividades onde exige pesquisas, situações que podem ser resolvidas em casa sem precisar sair e pegar filas, mas sim fazer algo mais rápido e fácil, lazer.`,
+    q5: `Ativo`,
+    q6: `Às vezes`,
+    q7: `Para pesquisas de trabalhos, estudar com vídeo aula e tirar dúvidas`,
+    q8: `Pesquisas`,
+    q9: `Ajuda a compartilhar informações e comunicação entre a escola e familiares sem precisar necessariamente ir a escola`,
+    q10: `Ampliou através de músicas, modinhas, informações, me deixando antenada sobre tudo de vários locais`,
+    q11: `Sim`,
+    q12: `Redes sociais`,
+    q13: `Procuro em outras fontes`,
+    q14: `Raramente`,
+    q15: `Proteger dados pessoas`,
+    q16: `Bom`,
+    q17: `Melhorar os notebooks que o SESI oferece para utilizarmos em sala de aula, eles travam demais, todos estão danificados e lentos.`,
+    q18: `Não sei`,
+    q19: `Não sei`,
+  },
+  {
+    q1: `Computador`,
+    q2: `No meu dia a dia inteiramente`,
+    q3: `Em casa`,
+    q4: `Facilitadora de processos e entretenimento`,
+    q5: `Ativo`,
+    q6: `Às vezes`,
+    q7: `Sim, no Senai usamos muito a tecnologia, além de cursos online que faço`,
+    q8: `Pesquisas`,
+    q9: `Em diversas situações em que se precisa pesquisar e entender mais sobre um assunto, por exemplo, em pesquisas escolares é ótimo`,
+    q10: `A tecnologia ampliou meu acesso a partir de pesquisas, vídeos educativos e culturais do Brasil`,
+    q11: `Sim`,
+    q12: `Redes sociais`,
+    q13: `Procuro em outras fontes`,
+    q14: `Nunca`,
+    q15: `Não espalhar informações falsas`,
+    q16: `Bom`,
+    q17: `Notebooks melhores (os pretos estão péssimos)`,
+    q18: `Excel`,
+    q19: `Curso`,
+  },
+  {
+    q1: `Inovação`,
+    q2: `Está presente em outras situações. Tudo aquilo que facilita o nosso cotidiano.`,
+    q3: `Em outras situações`,
+    q4: `Facilitar o dia a dia.`,
+    q5: `Um pouco dos dois`,
+    q6: `Nunca`,
+    q7: `Principalmente como auxílio nos estudos, como: retirar dúvidas, realizar exercícios, etc.`,
+    q8: `Comunicação`,
+    q9: `Na execução de tarefas e organização de uma equipe, como separar as funções/tópicos a serem abordados.`,
+    q10: `Apesar de algumas incoerências, a tecnologia permite o acesso ao conhecimento. Caso você precise de uma informação de forma resumida ou didática, essas ferramentas podem nos auxiliar.`,
+    q11: `Não`,
+    q12: `Outro`,
+    q13: `Pergunto para alguém`,
+    q14: `Sempre`,
+    q15: `Todos os anteriores`,
+    q16: `Regular`,
+    q17: `A escola já apresenta diversas tecnologias, principalmente através do SENAI.`,
+    q18: `Tempo de uso.`,
+    q19: `Não sei.`,
+  },
+  {
+    q1: `Futuro`,
+    q2: `Para mim a tecnologia não tem limites para resolver problemas diários.`,
+    q3: `Na comunicação`,
+    q4: `Ajudar e facilitar a resolução de problemas no dia a dia.`,
+    q5: `Passivo`,
+    q6: `Raramente`,
+    q7: `Uso a tecnologia para realizar um plano de estudos mais focado em uma área do conteúdo e também para realizar testes de conhecimento a respeito do conteúdo ensinado.`,
+    q8: `Pesquisas`,
+    q9: `Ele me ajuda a realizar um pensamento lógico e definir tarefas, como por exemplo no SENAI, a partir da tecnologia conseguimos controlar as atividades de cada membro do grupo para realizar o projeto e juntar as tarefas de cada um.`,
+    q10: `Ela trouxe maior acesso de forma rápida, tanto para informações quanto à própria cultura.`,
+    q11: `Sim`,
+    q12: `Uso excessivo do celular`,
+    q13: `Comparo com sites confiáveis`,
+    q14: `Às vezes`,
+    q15: `Todos os anteriores`,
+    q16: `Bom`,
+    q17: `Trazer maior estrutura (temos 32 computadores no LIM que demoram uma aula inteira só para ligar, o que gera uma demora para realizar uma simples pesquisa) e uma fundamentação maior por trás disso, como por exemplo um curso básico sobre ética dentro da tecnologia e proteção de dados.`,
+    q18: `Novos caminhos para trazer para meu cotidiano utilizando a tecnologia com porta.`,
+    q19: `A escola poderia trazer mais oportunidades relacionadas à tecnologia, mostrando para os alunos que a partir de um pouco de conhecimento dentro do mundo tech é possível realizar diversas coisas e abrir muitas oportunidades, independente do emprego ou do cargo que o estudante queira estabelecer para sua carreira.`,
+  },
+  {
+    q1: `futuro`,
+    q2: `acredito que esteja presente em tudo, a maioria das coisas do dia a dia foram avançando graças a tecnologia.`,
+    q3: `Na escola`,
+    q4: `ser o principal meio de comunicação e conexão na sociedade moderna.`,
+    q5: `Ativo`,
+    q6: `Às vezes`,
+    q7: `as vezes possuo dúvidas, então peço ajuda da tecnologia.`,
+    q8: `Pesquisas`,
+    q9: `comunicação em longa distância, um exemplo é conseguirmos fazer um trabalho sem precisar estar juntos.`,
+    q10: `temos acesso a diferentes informações e culturas todos os dias, através de redes sociais, séries, filmes, pesquisas, sites e blogs.`,
+    q11: `Sim`,
+    q12: `Redes sociais`,
+    q13: `Procuro em outras fontes`,
+    q14: `Nunca`,
+    q15: `Não espalhar informações falsas`,
+    q16: `Excelente`,
+    q17: `não sei.`,
+    q18: `um site para a escola.`,
+    q19: `concordar com a ideia e ajudar a aplicar.`,
+  },
+  {
+    q1: `vida`,
+    q2: `está presente em em outras situações do dia a dia`,
+    q3: `Na escola`,
+    q4: `desenvolver a sociedade`,
+    q5: `Ativo`,
+    q6: `Às vezes`,
+    q7: `Sim pois ela ira fazer parte de qualquer trabalho, vida e ate mesmo no desenvolvimento pessoal`,
+    q8: `Pesquisas`,
+    q9: `Ajuda no desenvolvimento de opinioes a partir de pesquisas`,
+    q10: `ela ampliou pois posso ter informações e ver novas culturas quando eu quiser`,
+    q11: `Sim`,
+    q12: `Redes sociais`,
+    q13: `Procuro em outras fontes`,
+    q14: `Nunca`,
+    q15: `Respeitar outras pessoas`,
+    q16: `Excelente`,
+    q17: `O uso dele como dinâmica`,
+    q18: `nenhuma`,
+    q19: `nada`,
+  },
+  {
+    q1: `IA`,
+    q2: `Está presente em outras situações do dia a dia`,
+    q3: `Em casa`,
+    q4: `Ajudar a evoluir a nossa sociedade e facilitar/melhorar nosso dia a dia.`,
+    q5: `Ativo`,
+    q6: `Às vezes`,
+    q7: `Eu utilizo a tecnologia para melhorar meus conhecimentos, trazer novos conceitos, tirar dúvidas que não compreendo e me ajudar em ideias.`,
+    q8: `Pesquisas`,
+    q9: `Ajuda para que nós alunos criarmos, a debatermos e organizar projetos.`,
+    q10: `Eu posso acessar, conhecer e ver diferentes culturas de longe, sem precisar me locomover.`,
+    q11: `Sim`,
+    q12: `Redes sociais`,
+    q13: `Procuro em outras fontes`,
+    q14: `Nunca`,
+    q15: `Não espalhar informações falsas`,
+    q16: `Bom`,
+    q17: `Nada.`,
+    q18: `Criação, organização.`,
+    q19: `No momento nada.`,
+  },
+  {
+    q1: `Avanço`,
+    q2: `Em quase tudo se a tecnologia`,
+    q3: `Em casa`,
+    q4: `A tecnologia tem a função de facilitar as funções do dia a dia e ajudar a sociedade em todos os aspectos`,
+    q5: `Ativo`,
+    q6: `Raramente`,
+    q7: `Sim utilizou a tecnologia para a minha formação, principalmente no SENAI pois é um curso de ADS que utiliza da tecnologia para os trabalhos`,
+    q8: `Pesquisas`,
+    q9: `Ela ajuda na produção do trabalho, por exemplo no SENAI os alunos são responsáveis por desenvolver sistemas e a tecnologia é a principal ferramenta para tal`,
+    q10: `Ela ampliou o meu acesso a cultura principalmente na internet`,
+    q11: `Sim`,
+    q12: `Notificações/mensagens`,
+    q13: `Verifico quem publicou`,
+    q14: `Raramente`,
+    q15: `Usar a tecnologia com equilíbrio`,
+    q16: `Bom`,
+    q17: `Não vejo nada além das tecnologias úteis que a gente usa já não use`,
+    q18: `Aprender a desenvolver sistemas de forma completa.`,
+    q19: `A escola já está me ensinando a isso`,
+  },
+  {
+    q1: `Internet`,
+    q2: `Presente em outras situações do nosso dia a dia. Em praticamente tudo, na verdade.`,
+    q3: `Em outras situações`,
+    q4: `Proporcional automatização, facilidade e agilidade nas coisas.`,
+    q5: `Um pouco dos dois`,
+    q6: `Nunca`,
+    q7: `Eu a utilizo para agilizar o meu trabalho, buscando em diversificadas fontes e a vídeos no YouTube.`,
+    q8: `Vídeos`,
+    q9: `A tecnologia possibilita que todos pesquisem ao mesmo tempo em diferentes fontes ou na mesma, e possibilita a continuação do trabalho estando cada um em sua casa.`,
+    q10: `A tecnologia conecta tudo e todos, independente do país.`,
+    q11: `Sim`,
+    q12: `Uso excessivo do celular`,
+    q13: `Comparo com sites confiáveis`,
+    q14: `Às vezes`,
+    q15: `Todos os anteriores`,
+    q16: `Regular`,
+    q17: `Concentrar mais ao utilizar.`,
+    q18: `Eu não sei. Acho que a de saber diferenciar diferentes softwares, sabendo analisar qual é bom/ruim para compra.`,
+    q19: `Fornecer estudos e pesquisas relacionados a isso, ou cursos, como o que aconteceu esse ano de IA Generativa.`,
+  },
+  {
+    q1: `Ajuda`,
+    q2: `Tudo que facilita nosso processo/vida`,
+    q3: `Em casa`,
+    q4: `Progresso da humanidade e facilitar nossas vidas`,
+    q5: `Ativo`,
+    q6: `Às vezes`,
+    q7: `Estudo, apresentação, aulas, cursos, revisão`,
+    q8: `Pesquisas`,
+    q9: `Possibilita trabalhos em grupo fora da escola sem precisar se encontrar`,
+    q10: `100% pois mídias físicas estão caindo cada vez mais no esquecimento`,
+    q11: `Sim`,
+    q12: `Redes sociais`,
+    q13: `Procuro em outras fontes`,
+    q14: `Raramente`,
+    q15: `Proteger dados pessoas`,
+    q16: `Bom`,
+    q17: `Usar para estudar, não ela pensar por nós`,
+    q18: `Cyber segurança`,
+    q19: `Curso, palestra, aula..`,
+  },
+  {
+    q1: `Globalização`,
+    q2: `Em quaisquer situações, como nas cidades, medicina, educação, em todas as áreas.`,
+    q3: `Na comunicação`,
+    q4: `Conseguir fazer com que o mundo seja avançado e combata todos os problemas sociais`,
+    q5: `Passivo`,
+    q6: `Raramente`,
+    q7: `Utilizo para conseguir aprender conteúdos novos`,
+    q8: `Pesquisas`,
+    q9: `Facilita a comunicação e permite que várias pessoas trabalhem juntas mesmo à distância. Por exemplo, um grupo pode usar o Google Docs para fazer um trabalho ao mesmo tempo.`,
+    q10: `Permitiu acesso rápido a livros, vídeos, notícias, cursos, músicas e conteúdos culturais de diferentes lugares do mundo.`,
+    q11: `Sim`,
+    q12: `Uso excessivo do celular`,
+    q13: `Verifico quem publicou`,
+    q14: `Às vezes`,
+    q15: `Usar a tecnologia com equilíbrio`,
+    q16: `Bom`,
+    q17: `Mais atividades práticas e oportunidades para aplicar a tecnologia em projetos reais.`,
+    q18: `Programação e desenvolvimento de projetos tecnológicos, além do uso de ferramentas de inteligência artificial.`,
+    q19: `Oferecer mais aulas práticas, projetos de tecnologia, oficinas e acesso a ferramentas e equipamentos para colocar os conhecimentos em prática.`,
+  },
+  {
+    q1: `Conexão`,
+    q2: `Em outras situações do dia a dia também.`,
+    q3: `Na escola`,
+    q4: `Facilitar a vida das pessoas, tanto na comunicação como na escola, trabalho...`,
+    q5: `Ativo`,
+    q6: `Sim, frequentemente`,
+    q7: `Pesquisando, assistindo vídeos.`,
+    q8: `Pesquisas`,
+    q9: `Da o poder de trabalhar tudo junto em um único projeto. Como por exemplo no canva, vc pode montar um trabalho em conjunto.`,
+    q10: `através de musica, filmes, notícias`,
+    q11: `Sim`,
+    q12: `Redes sociais`,
+    q13: `Procuro em outras fontes`,
+    q14: `Nunca`,
+    q15: `Respeitar outras pessoas`,
+    q16: `Excelente`,
+    q17: `Os computadores que são disponibilizados para as aulas nas salas`,
+    q18: `Não sei`,
+    q19: `Não sei`,
+  },
+  {
+    q1: `Inovação`,
+    q2: `Outras situações`,
+    q3: `Em casa`,
+    q4: `O papel da tecnologia é fundamental para que a sociedade evolua.`,
+    q5: `Ativo`,
+    q6: `Raramente`,
+    q7: `Em pesquisas, vídeo aulas, exercícios on-line, etc.`,
+    q8: `Pesquisas`,
+    q9: `Muitas escolas tem aplicativos ou sites onde os pais tem maior acesso ao cronograma escolar.`,
+    q10: `As pesquisas e notícias ajudam a fazer com que grande parte da população tenha acesso a informação e cultura.`,
+    q11: `Sim`,
+    q12: `Notificações/mensagens`,
+    q13: `Procuro em outras fontes`,
+    q14: `Raramente`,
+    q15: `Usar a tecnologia com equilíbrio`,
+    q16: `Bom`,
+    q17: `Acho que a tecnologia está muito presente na nossa escola, porém nem sempre os computadores e a internet está ok para que possamos fazer pesquisas ou slides.`,
+    q18: `Acho que não há nenhuma.`,
+    q19: `No momento nada.`,
+  },
+  {
+    q1: `Comunicação`,
+    q2: `Em tudo hoje em dia`,
+    q3: `Em outras situações`,
+    q4: `Facilitar a vida e o trabalho`,
+    q5: `Um pouco dos dois`,
+    q6: `Nunca`,
+    q7: `Fazendo pesquisas`,
+    q8: `Vídeos`,
+    q9: `Com a facilidade da comunicação e de buscar informações`,
+    q10: `Garantindo que a parte da comunicação funcionasse`,
+    q11: `Não`,
+    q12: `Outro`,
+    q13: `Comparo com sites confiáveis`,
+    q14: `Sempre`,
+    q15: `Todos os anteriores`,
+    q16: `Regular`,
+    q17: `Internet e aparelhos eletrônicos (lmt)`,
+    q18: `Criação de conteúdo`,
+    q19: `Acho que não muita coisa a não ser dar base para uma boa convivência no meio digital.`,
+  },
+  {
+    q1: `senai`,
+    q2: `em outras situações do dia a dia também`,
+    q3: `Em casa`,
+    q4: `principalmente facilitar a vida cotidiana`,
+    q5: `Ativo`,
+    q6: `Às vezes`,
+    q7: `sim`,
+    q8: `Pesquisas`,
+    q9: `ajuda a nós conectarmos com as pessoas da escola mais facilmente`,
+    q10: `atualmente é muito acessível vermos conteúdos vindos de outros países`,
+    q11: `Sim`,
+    q12: `Notificações/mensagens`,
+    q13: `Procuro em outras fontes`,
+    q14: `Raramente`,
+    q15: `Usar a tecnologia com equilíbrio`,
+    q16: `Bom`,
+    q17: `a conexão com a internet e os notebooks do LIM`,
+    q18: `proteção de dados`,
+    q19: `palestra com especialista`,
+  },
+  {
+    q1: `Novidade`,
+    q2: `Em vários momento do dia`,
+    q3: `Na escola`,
+    q4: `Ajudar`,
+    q5: `Ativo`,
+    q6: `Sim, frequentemente`,
+    q7: `Isso par ajudar em matérias`,
+    q8: `Pesquisas`,
+    q9: `Comunicação`,
+    q10: `Sim, muito`,
+    q11: `Sim`,
+    q12: `Redes sociais`,
+    q13: `Procuro em outras fontes`,
+    q14: `Nunca`,
+    q15: `Respeitar outras pessoas`,
+    q16: `Excelente`,
+    q17: `LM`,
+    q18: `Saber fazer video`,
+    q19: `Trabalhos em grupo`,
+  },
+  {
+    q1: `Inovações.`,
+    q2: `Não, a tecnologia está presente em muitas ações do cotidiano, como nos estudos, comunicação, trabalho e etc.`,
+    q3: `Na comunicação`,
+    q4: `Facilitar a comunicação, o acesso a trabalho e estudos`,
+    q5: `Ativo`,
+    q6: `Raramente`,
+    q7: `Para fazer pesquisar, realizar trabalhos e estudar.`,
+    q8: `Pesquisas`,
+    q9: `Compartilhar pesquisas e informações que colaboram para a organização do trabalho.`,
+    q10: `Na praticidade e na rapidez em pesquisas, notícias, livros e etc.`,
+    q11: `Sim`,
+    q12: `Jogos`,
+    q13: `Verifico quem publicou`,
+    q14: `Às vezes`,
+    q15: `Usar a tecnologia com equilíbrio`,
+    q16: `Bom`,
+    q17: `Não sei`,
+    q18: `Pesquisar de forma criativa.`,
+    q19: `Poderiam ajudar/ensinar os alunos a verificar se um site é seguro ou não.`,
+  },
+  {
+    q1: `Rapidez`,
+    q2: `Tecnologia é tudo o que simplifica o cotidiano das pessoas.`,
+    q3: `Em outras situações`,
+    q4: `O papel da tecnologia atualmente é ajudar a sociedade a evoluir.`,
+    q5: `Um pouco dos dois`,
+    q6: `Nunca`,
+    q7: `Utilizo para me ajudar e guiar nos estudos.`,
+    q8: `Vídeos`,
+    q9: `Ela ajuda a compartilhar e criar projetos em conjunto.`,
+    q10: `Ela apresenta diversos conteúdos que me permitem ter mais conhecimento sobre.`,
+    q11: `Não`,
+    q12: `Outro`,
+    q13: `Comparo com sites confiáveis`,
+    q14: `Sempre`,
+    q15: `Todos os anteriores`,
+    q16: `Regular`,
+    q17: `Poderia ser oferecidos mais recursos e estabilidade.`,
+    q18: `Automação com IA`,
+    q19: `Oferecer mais recursos`,
+  },
+  {
+    q1: `Futuro`,
+    q2: `Em todas as situações`,
+    q3: `Na escola`,
+    q4: `Aprimorar o desenvolvimento humano`,
+    q5: `Ativo`,
+    q6: `Sim, frequentemente`,
+    q7: `De modo guiado ao aprendizado de conteúdos complicados`,
+    q8: `Pesquisas`,
+    q9: `Na organização das funções e qualidade acadêmica`,
+    q10: `Por meio de sites com ebooks e notícias`,
+    q11: `Sim`,
+    q12: `Redes sociais`,
+    q13: `Procuro em outras fontes`,
+    q14: `Nunca`,
+    q15: `Respeitar outras pessoas`,
+    q16: `Excelente`,
+    q17: `A maneira como a tecnologia é abordada nas escolas`,
+    q18: `Programação de IA`,
+    q19: `No momento nada`,
+  },
+  {
+    q1: `Avanço`,
+    q2: `Está presente em praticamente tudo`,
+    q3: `Em outras situações`,
+    q4: `Ajuda e auxiliar com determinadas coisas, além de promover maior informações`,
+    q5: `Um pouco dos dois`,
+    q6: `Raramente`,
+    q7: `Pesquisando o que me causa dúvidas`,
+    q8: `Vídeos`,
+    q9: `Ajuda na separação de funções de forma organizada`,
+    q10: `Ao passar do tempo e de sua evolução ela se tornou potente`,
+    q11: `Sim`,
+    q12: `Uso excessivo do celular`,
+    q13: `Comparo com sites confiáveis`,
+    q14: `Às vezes`,
+    q15: `Todos os anteriores`,
+    q16: `Regular`,
+    q17: `Não sei`,
+    q18: `Não sei`,
+    q19: `Avançar cada vez mais na tecnologia de maneira consciente`,
+  },
+  {
+    q1: `Inovação`,
+    q2: `Não. A tecnologia também está presente em situações como comunicação, estudos, trabalho, transporte e até tarefas de casa.`,
+    q3: `Na escola`,
+    q4: `A tecnologia ajuda a facilitar a vida das pessoas, melhorar a comunicação e aumentar o acesso à informação`,
+    q5: `Ativo`,
+    q6: `Às vezes`,
+    q7: `Uso a tecnologia para pesquisar conteúdos, assistir a videoaulas, fazer trabalhos e estudar para as provas.`,
+    q8: `Pesquisas`,
+    q9: `Ajuda a compartilhar ideias, fazer trabalhos juntos e se comunicar com os colegas de forma mais rápida`,
+    q10: `Ela facilita o acesso a notícias, livros, vídeos, músicas, filmes e diferentes culturas`,
+    q11: `Sim`,
+    q12: `Redes sociais`,
+    q13: `Procuro em outras fontes`,
+    q14: `Nunca`,
+    q15: `Não espalhar informações falsas`,
+    q16: `Excelente`,
+    q17: `Acho que poderia ter mais atividades usando a tecnologia e mais orientação sobre como usar a internet de forma segura e responsável`,
+    q18: `Gostaria de melhorar minha capacidade de pesquisar e identificar informações confiáveis na internet`,
+    q19: `A escola pode oferecer atividades, projetos e aulas que ensinem a usar melhor as ferramentas digitais e a verificar informações`,
+  },
+  {
+    q1: `avanço e retrocesso`,
+    q2: `está presente no nosso dia a dia`,
+    q3: `Em casa`,
+    q4: `ajudar e ensinar como forma de apoio`,
+    q5: `Ativo`,
+    q6: `Às vezes`,
+    q7: `na área do estudo`,
+    q8: `Pesquisas`,
+    q9: `ah compreender o conteúdo e aprender ele`,
+    q10: `mostrando outras visões do mundo e diferente pontos de vistas`,
+    q11: `Sim`,
+    q12: `Redes sociais`,
+    q13: `Procuro em outras fontes`,
+    q14: `Nunca`,
+    q15: `Não espalhar informações falsas`,
+    q16: `Bom`,
+    q17: `nada`,
+    q18: `linguagem`,
+    q19: `ensinar o equilíbrio`,
+  },
+  {
+    q1: `Inovação`,
+    q2: `Está presente em outras situações, como livros sendo uma tecnologia arcaica porém funcional`,
+    q3: `Na escola`,
+    q4: `Auxílio de atividades diárias`,
+    q5: `Ativo`,
+    q6: `Sim, frequentemente`,
+    q7: `De maneira moderada e regulada, fazendo breves pesquisas para aplicação`,
+    q8: `Pesquisas`,
+    q9: `Auxilia pro processo didático, com uma variedade explicativa de conceitos e de técnicas de ensino`,
+    q10: `Facilitou por meio de imagens, vídeos e até mesmo áudios`,
+    q11: `Sim`,
+    q12: `Redes sociais`,
+    q13: `Procuro em outras fontes`,
+    q14: `Nunca`,
+    q15: `Respeitar outras pessoas`,
+    q16: `Excelente`,
+    q17: `Comprar novos aparelhos como os computadores móveis que podem ser utilizados nas salas de aula`,
+    q18: `todas`,
+    q19: `Melhorar o artifícios utilizados na escola para a área da tecnologia (como por exemplo os computadores móveis)`,
+  },
+  {
+    q1: `Celular`,
+    q2: `Está presente em outras situações do cotidiano, nas indústrias etc`,
+    q3: `Na escola`,
+    q4: `Auxiliar o desenvolvimento social e econômicos das pessoas`,
+    q5: `Ativo`,
+    q6: `Sim, frequentemente`,
+    q7: `Sim, faço SENAI`,
+    q8: `Pesquisas`,
+    q9: `Ajuda estabelecer a comunicação mútua das equipes`,
+    q10: `Através de vídeos e sites culturais`,
+    q11: `Sim`,
+    q12: `Redes sociais`,
+    q13: `Procuro em outras fontes`,
+    q14: `Nunca`,
+    q15: `Respeitar outras pessoas`,
+    q16: `Excelente`,
+    q17: `Uma rede wi-fi mais estável`,
+    q18: `Gerenciamento de dados e informações`,
+    q19: `Palestras e cursos`,
+  },
+  {
+    q1: `Celular`,
+    q2: `Está presente em outras situações do cotidiano.`,
+    q3: `Na comunicação`,
+    q4: `Ajudar as pessoas no dia a dia.`,
+    q5: `Um pouco dos dois`,
+    q6: `Raramente`,
+    q7: `Uso para pesquisar e estudar.`,
+    q8: `Vídeos`,
+    q9: `Facilita a comunicação entre os grupos.`,
+    q10: `Trouxe acesso mais rápido a notícias e cultura.`,
+    q11: `Sim`,
+    q12: `Uso excessivo do celular`,
+    q13: `Comparo com sites confiáveis`,
+    q14: `Às vezes`,
+    q15: `Todos os anteriores`,
+    q16: `Regular`,
+    q17: `Melhorar a internet da escola.`,
+    q18: `Inteligência artificial.`,
+    q19: `Oferecer mais cursos práticos.`,
+  },];
+
+/* ------------------------------------------------------------
+   HELPERS DE CONTAGEM
+   ------------------------------------------------------------ */
+
 function count(field, options){
   const c = {};
   options.forEach(o => c[o] = 0);
@@ -15,8 +579,11 @@ function countFreeform(field, limit=8){
   return Object.entries(c).sort((a,b)=>b[1]-a[1]).slice(0,limit);
 }
 
-const CHART_COLORS = ["#6153d3","#0f9c7f","#d64570","#c97a12","#3d7fd6","#8a5cc7","#4a9d5f"];
+/* ------------------------------------------------------------
+   GRÁFICOS (Chart.js)
+   ------------------------------------------------------------ */
 
+const CHART_COLORS = ["#6153d3","#0f9c7f","#d64570","#c97a12","#3d7fd6","#8a5cc7","#4a9d5f"];
 const charts = {};
 
 function baseBarOptions(horizontal=false){
@@ -68,6 +635,10 @@ function buildLegend(containerId, labels, data){
   }).join("");
 }
 
+/* ------------------------------------------------------------
+   DEFINIÇÃO DAS PERGUNTAS / CARDS
+   ------------------------------------------------------------ */
+
 const QUESTION_CARDS = [
   {grid:"grid-1", type:"chart", horizontal:false, num:"Pergunta 3", text:"Em quais situações do dia a dia você percebe mais a tecnologia?",
     field:"q3", options:["Na escola","Em casa","No trabalho","Na comunicação","No transporte","Em outras situações"]},
@@ -92,7 +663,7 @@ const QUESTION_CARDS = [
   {grid:"grid-3", type:"chart", horizontal:false, num:"Pergunta 14", text:"A tecnologia já causou dificuldade nas suas relações com outras pessoas?",
     field:"q14", options:["Nunca","Raramente","Às vezes","Frequentemente","Sempre"]},
   {grid:"grid-3", type:"chart", horizontal:true, wide:true, num:"Pergunta 15", text:"O que você considera mais importante para usar a tecnologia de forma ética e responsável?",
-    field:"q15", options:["Respeitar outras pessoas","Não espalhar informações falsas","Proteger dados pessoais","Respeitar a privacidade","Usar a tecnologia com equilíbrio","Todos os anteriores"]},
+    field:"q15", options:["Respeitar outras pessoas","Não espalhar informações falsas","Proteger dados pessoas","Respeitar a privacidade","Usar a tecnologia com equilíbrio","Todos os anteriores"]},
 
   {grid:"grid-4", type:"donut", num:"Pergunta 16", text:"Como você avalia o uso da tecnologia na escola?",
     field:"q16", options:["Excelente","Bom","Regular","Ruim","Muito ruim"]},
@@ -137,9 +708,13 @@ function buildCards(){
   });
 }
 
+/* ------------------------------------------------------------
+   KPIs
+   ------------------------------------------------------------ */
+
 function updateKPIs(){
   document.getElementById("kpi-total").textContent = RESPONSES.length;
-  document.getElementById("trend-total").textContent = `+${RESPONSES.length} hoje`;
+  document.getElementById("trend-total").textContent = `${RESPONSES.length} no total`;
 
   const active = RESPONSES.filter(r => r.q5 === "Ativo").length;
   document.getElementById("kpi-active").textContent = RESPONSES.length ? Math.round((active/RESPONSES.length)*100)+"%" : "0%";
@@ -154,7 +729,9 @@ function updateKPIs(){
   document.getElementById("kpi-school").textContent = labelByAvg;
 }
 
-let firstRender = true;
+/* ------------------------------------------------------------
+   RENDER GERAL
+   ------------------------------------------------------------ */
 
 function renderAll(){
   QUESTION_CARDS.forEach((q, idx) => {
@@ -174,33 +751,57 @@ function renderAll(){
         : `<span class="word-pill">Sem respostas ainda</span>`;
     } else if(q.type === "text"){
       const el = document.getElementById(`text-${idx}`);
-      const answers = RESPONSES.slice(-12).reverse().filter(r => r[q.field]);
+      const answers = RESPONSES.slice().reverse().filter(r => r[q.field]);
       el.innerHTML = answers.length
         ? answers.map(r => `<div class="text-answer-row"><span>${r[q.field]}</span></div>`).join("")
         : `<div class="text-answer-row">Sem respostas ainda.</div>`;
     }
   });
   updateKPIs();
-
-  if(firstRender){
-    revealCards();
-    firstRender = false;
-  }
 }
 
-async function tick(){
-  RESPONSES = await fetchResponses();
-  renderAll();
+/* ------------------------------------------------------------
+   ANIMAÇÕES DE ENTRADA (reveal on scroll, estilo motion.dev)
+   ------------------------------------------------------------ */
+
+function initReveal(){
+  const items = document.querySelectorAll('[data-reveal]');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        const el = entry.target;
+        const delay = parseInt(el.dataset.delay || "0", 10);
+        setTimeout(() => el.classList.add('in'), delay);
+        io.unobserve(el);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: "0px 0px -40px 0px" });
+
+  items.forEach(el => io.observe(el));
 }
+
+function revealCards(){
+  const cards = document.querySelectorAll('.q-card:not(.in)');
+  cards.forEach((card, i) => {
+    setTimeout(() => card.classList.add('in'), i * 45);
+  });
+}
+
+/* ------------------------------------------------------------
+   BOOT
+   ------------------------------------------------------------ */
 
 document.addEventListener("DOMContentLoaded", () => {
-  buildCards();
-  tick();
-  setInterval(tick, 2000);
+  document.getElementById("status-label").textContent = `${RESPONSES.length} respostas carregadas`;
 
-  document.getElementById("refresh-btn").addEventListener("click", async (e) => {
+  buildCards();
+  renderAll();
+  initReveal();
+  revealCards();
+
+  document.getElementById("refresh-btn").addEventListener("click", (e) => {
     e.currentTarget.classList.add("spinning");
-    await tick();
+    renderAll();
     setTimeout(() => e.currentTarget.classList.remove("spinning"), 500);
   });
 
