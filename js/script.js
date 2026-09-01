@@ -631,17 +631,29 @@ const CHART_COLORS = ["#6153d3","#0f9c7f","#d64570","#c97a12","#3d7fd6","#8a5cc7
 const charts = {};
 
 function baseBarOptions(horizontal=false){
+  const isMobile = window.innerWidth < 640;
   return {
     indexAxis: horizontal ? 'y' : 'x',
     responsive:true, maintainAspectRatio:false,
+    layout:{ padding:{ left: horizontal ? 4 : 0 } },
     animation:{ duration:700, easing:'easeOutQuint' },
     plugins:{ legend:{display:false}, tooltip:{
       backgroundColor:"#16160f", titleColor:"#fff", bodyColor:"#fff",
       padding:10, titleFont:{family:"Poppins"}, bodyFont:{family:"Poppins"}, cornerRadius:8
     }},
     scales:{
-      x:{ grid:{color:"rgba(20,20,15,.06)"}, ticks:{color:"#77756a", font:{family:"Poppins", size:11}} },
-      y:{ grid:{display:!horizontal, color:"rgba(20,20,15,.06)"}, ticks:{color:"#77756a", font:{family:"Poppins", size:11}} }
+      x:{ grid:{color:"rgba(20,20,15,.06)"}, ticks:{color:"#77756a", font:{family:"Poppins", size:isMobile?9:11}} },
+      y:{
+        grid:{display:!horizontal, color:"rgba(20,20,15,.06)"},
+        ticks:{
+          color:"#77756a", font:{family:"Poppins", size:isMobile?9:11},
+          autoSkip:false,
+          crossAlign: horizontal ? "far" : "center"
+        },
+        afterFit: (scale) => {
+          if(horizontal) scale.width = isMobile ? 108 : 150;
+        }
+      }
     }
   };
 }
