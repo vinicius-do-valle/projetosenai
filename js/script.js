@@ -579,6 +579,50 @@ function countFreeform(field, limit=8){
   return Object.entries(c).sort((a,b)=>b[1]-a[1]).slice(0,limit);
 }
 
+// Categorias definidas manualmente a partir da leitura de todas as 26
+// respostas abertas — não é contagem de palavra solta, é a ideia central
+// de cada resposta, agrupada por tema.
+const THEME_DATA = {
+  q7: [
+    ["Apoio geral nos estudos", 11],
+    ["Pesquisas escolares", 7],
+    ["Vídeo-aulas", 4],
+    ["Cursos (SENAI/online)", 3],
+    ["Trabalhos e apresentações", 1],
+  ],
+  q9: [
+    ["Organização de tarefas", 7],
+    ["Comunicação à distância", 4],
+    ["Compartilhamento de documentos", 4],
+    ["Conexão entre colegas", 4],
+    ["Pesquisa em grupo", 4],
+    ["Comunicação com escola/pais", 3],
+  ],
+  q10: [
+    ["Culturas de outros lugares", 7],
+    ["Pesquisas e conhecimento", 5],
+    ["Notícias e atualidades", 5],
+    ["Vídeos e conteúdo audiovisual", 4],
+    ["Redes sociais e mídia digital", 3],
+    ["Música", 2],
+  ],
+  q17: [
+    ["Internet/wifi mais estável", 7],
+    ["Equipamentos/notebooks", 6],
+    ["Nada a melhorar", 4],
+    ["Orientação e uso consciente", 4],
+    ["Mais aulas práticas", 3],
+    ["Não sei", 2],
+  ],
+  q19: [
+    ["Nada a acrescentar / não sei", 8],
+    ["Cursos e palestras", 6],
+    ["Orientação sobre uso seguro", 5],
+    ["Outro (equipamentos, incentivo)", 4],
+    ["Mais aulas práticas", 3],
+  ],
+};
+
 /* ------------------------------------------------------------
    GRÁFICOS (Chart.js)
    ------------------------------------------------------------ */
@@ -696,9 +740,20 @@ function cardHTML(q, idx){
   }
   return `
     <div class="q-card" data-type="open">
-      <div class="q-num">${q.num}</div>
-      <div class="q-text">${q.text}</div>
+      <div class="q-card-head">
+        <div>
+          <div class="q-num">${q.num}</div>
+          <div class="q-text">${q.text}</div>
+        </div>
+        <button class="view-toggle" data-idx="${idx}" data-view="list" aria-label="Alternar entre lista e gráfico">
+          <svg viewBox="0 0 16 16" fill="none"><path d="M2 13V7M6.5 13V3M11 13V9M15 13V5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Ver como gráfico</span>
+        </button>
+      </div>
       <div class="text-answers" id="text-${idx}"></div>
+      <div class="chart-holder" id="chart-wrap-${idx}" hidden>
+        <canvas id="c-${idx}" role="img" aria-label="Temas mais citados — ${q.text}"></canvas>
+      </div>
     </div>`;
 }
 
@@ -755,6 +810,11 @@ function renderAll(){
       el.innerHTML = answers.length
         ? answers.map(r => `<div class="text-answer-row"><span>${r[q.field]}</span></div>`).join("")
         : `<div class="text-answer-row">Sem respostas ainda.</div>`;
+
+      const top = THEME_DATA[q.field] || [];
+      if(top.length){
+        renderBar(`c-${idx}`, top.map(([w])=>w), top.map(([,n])=>n), true);
+      }
     }
   });
   updateKPIs();
@@ -803,6 +863,29 @@ document.addEventListener("DOMContentLoaded", () => {
     e.currentTarget.classList.add("spinning");
     renderAll();
     setTimeout(() => e.currentTarget.classList.remove("spinning"), 500);
+  });
+
+  document.querySelectorAll(".view-toggle").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const idx = btn.dataset.idx;
+      const listEl = document.getElementById(`text-${idx}`);
+      const chartEl = document.getElementById(`chart-wrap-${idx}`);
+      const showingList = btn.dataset.view === "list";
+
+      if(showingList){
+        listEl.hidden = true;
+        chartEl.hidden = false;
+        btn.dataset.view = "chart";
+        btn.classList.add("active");
+        btn.querySelector("span").textContent = "Ver respostas";
+      } else {
+        listEl.hidden = false;
+        chartEl.hidden = true;
+        btn.dataset.view = "list";
+        btn.classList.remove("active");
+        btn.querySelector("span").textContent = "Ver como gráfico";
+      }
+    });
   });
 
   document.querySelectorAll(".f-btn").forEach(btn => {
